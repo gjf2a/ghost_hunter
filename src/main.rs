@@ -6,7 +6,6 @@ use spin::Mutex;
 use ghost_hunter_core::GhostHunterGame;
 use ghost_hunter::MainGame;
 use pluggable_interrupt_os::HandlerTable;
-
 use pc_keyboard::DecodedKey;
 
 lazy_static! {
