@@ -35,7 +35,6 @@ fn draw_header(game: &MainGame) {
 }
 
 fn draw_normal_header(game: &MainGame) {
-    clear_row(1, Color::Black);
     let header_color = ColorCode::new(Color::White, Color::Black);
     let score_text = "Score:";
     clear_row(0, Color::Black);
