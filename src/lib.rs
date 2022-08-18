@@ -1,5 +1,3 @@
-#![feature(const_generics)]
-#![allow(incomplete_features)]
 #![cfg_attr(not(test), no_std)]
 
 use pluggable_interrupt_os::vga_buffer::{BUFFER_WIDTH, BUFFER_HEIGHT, plot, plot_str, plot_num, clear_row, ColorCode, Color};
