@@ -1,5 +1,5 @@
 #![cfg_attr(not(test), no_std)]
-
+use core::option::Option::Some;
 use pluggable_interrupt_os::vga_buffer::{BUFFER_WIDTH, BUFFER_HEIGHT, plot, plot_str, plot_num, clear_row, ColorCode, Color};
 use ghost_hunter_core::{Status, Position, Cell};
 
