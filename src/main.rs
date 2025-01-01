@@ -1,23 +1,35 @@
 #![no_std]
 #![no_main]
 
-use lazy_static::lazy_static;
-use spin::Mutex;
-use ghost_hunter_core::GhostHunterGame;
+use crossbeam::atomic::AtomicCell;
+
 use ghost_hunter::MainGame;
 use pluggable_interrupt_os::HandlerTable;
 use pc_keyboard::DecodedKey;
 
-lazy_static! {
-    static ref GAME: Mutex<MainGame> = Mutex::new(GhostHunterGame::new());
+static TICKED: AtomicCell<bool> = AtomicCell::new(false);
+static KEY: AtomicCell<Option<DecodedKey>> = AtomicCell::new(None);
+
+fn cpu_loop() -> ! {
+    let mut game = MainGame::new();
+    loop {
+        if TICKED.load() {
+            TICKED.store(false);
+            ghost_hunter::tick(&mut game);
+        }
+        if let Some(key) = KEY.load() {
+            KEY.store(None);
+            game.key(key);
+        }
+    }
 }
 
 fn tick() {
-    ghost_hunter::tick(&mut GAME.lock());
+    TICKED.store(true);
 }
 
 fn key(key: DecodedKey) {
-    GAME.lock().key(key);
+    KEY.store(Some(key));
 }
 
 #[no_mangle]
@@ -25,5 +37,6 @@ pub extern "C" fn _start() -> ! {
     HandlerTable::new()
         .keyboard(key)
         .timer(tick)
+        .cpu_loop(cpu_loop)
         .start()
 }
