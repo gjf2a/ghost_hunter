@@ -13,13 +13,14 @@ static KEY: AtomicCell<Option<DecodedKey>> = AtomicCell::new(None);
 fn cpu_loop() -> ! {
     let mut game = MainGame::new();
     loop {
-        if TICKED.load() {
-            TICKED.store(false);
+        if let Ok(_) = TICKED.compare_exchange(true, false) {
             ghost_hunter::tick(&mut game);
         }
-        if let Some(key) = KEY.load() {
-            KEY.store(None);
-            game.key(key);
+        
+        if let Ok(k) = KEY.fetch_update(|k| if k.is_some() {Some(None)} else {None}) {
+            if let Some(k) = k {
+                game.key(k);
+            }
         }
     }
 }
